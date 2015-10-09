@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E71BF0901BC8352C0016FF84 /* SwipeBetweenViewControllers.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71BF08F1BC8352C0016FF84 /* SwipeBetweenViewControllers.swift */; settings = {ASSET_TAGS = (); }; };
 		E7D241B41BC51FCE0008BC05 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D241B31BC51FCE0008BC05 /* AppDelegate.swift */; };
 		E7D241B61BC51FCE0008BC05 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D241B51BC51FCE0008BC05 /* ViewController.swift */; };
 		E7D241BB1BC51FCE0008BC05 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E7D241BA1BC51FCE0008BC05 /* Assets.xcassets */; };
@@ -33,6 +34,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		E71BF08F1BC8352C0016FF84 /* SwipeBetweenViewControllers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwipeBetweenViewControllers.swift; sourceTree = "<group>"; };
 		E7D241B01BC51FCE0008BC05 /* HorizontalScrolling.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HorizontalScrolling.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7D241B31BC51FCE0008BC05 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E7D241B51BC51FCE0008BC05 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -100,6 +102,7 @@
 				E7D241BA1BC51FCE0008BC05 /* Assets.xcassets */,
 				E7D241BC1BC51FCE0008BC05 /* LaunchScreen.storyboard */,
 				E7D241BF1BC51FCE0008BC05 /* Info.plist */,
+				E71BF08F1BC8352C0016FF84 /* SwipeBetweenViewControllers.swift */,
 			);
 			path = HorizontalScrolling;
 			sourceTree = "<group>";
@@ -254,6 +257,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E71BF0901BC8352C0016FF84 /* SwipeBetweenViewControllers.swift in Sources */,
 				E7D241B61BC51FCE0008BC05 /* ViewController.swift in Sources */,
 				E7D241B41BC51FCE0008BC05 /* AppDelegate.swift in Sources */,
 			);
@@ -474,6 +478,7 @@
 				E7D241DA1BC51FCE0008BC05 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		E7D241DB1BC51FCE0008BC05 /* Build configuration list for PBXNativeTarget "HorizontalScrollingTests" */ = {
 			isa = XCConfigurationList;
@@ -482,6 +487,7 @@
 				E7D241DD1BC51FCE0008BC05 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		E7D241DE1BC51FCE0008BC05 /* Build configuration list for PBXNativeTarget "HorizontalScrollingUITests" */ = {
 			isa = XCConfigurationList;
@@ -490,6 +496,7 @@
 				E7D241E01BC51FCE0008BC05 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
