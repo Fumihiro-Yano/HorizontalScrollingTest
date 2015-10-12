@@ -63,7 +63,7 @@ class SwipeBetweenViewControllers: UINavigationController,UIPageViewControllerDe
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.navigationBar.barTintColor = UIColor(red:0.01, green:0.05, blue:0.06, alpha:1) //%%% bartint
+        self.navigationBar.barTintColor = UIColor.whiteColor()//(red:0.01, green:0.05, blue:0.06, alpha:1) //%%% bartint
         self.navigationBar.translucent = false
     }
     
@@ -87,7 +87,7 @@ class SwipeBetweenViewControllers: UINavigationController,UIPageViewControllerDe
         let numControllers :Int = viewControllerArray.count
         
         if (buttonText.count == 0) {
-            buttonText = ["first","second","third","fourth","etc","etc","etc","etc"] //%%%buttontitle
+            buttonText = ["Home","second","third","fourth","etc","etc","etc","etc"] //%%%buttontitle
         }
         
         for (var i = 0 ; i < numControllers; i++) {
@@ -104,6 +104,13 @@ class SwipeBetweenViewControllers: UINavigationController,UIPageViewControllerDe
         pageController.navigationController?.navigationBar.topItem?.titleView = navigationView
         
         self.setupSelector()
+        
+    }
+        //画面を回転させた時のnavigationvarの描画変更
+    override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        /*
+        navigationbarはAoutlayoutが適用されないから回転したときに変更してあげる必要がある。
+        */
     }
     
     //%%% sets up the selection bar under the buttons on the navigation bar

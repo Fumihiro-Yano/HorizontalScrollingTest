@@ -21,12 +21,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let navigationController:SwipeBetweenViewControllers = SwipeBetweenViewControllers(rootViewController: pageController)
         
         // Override point for customization after application launch.
-        let demo:UIViewController = UIViewController()
+        let demo:UIViewController = ViewController()
         let demo2:UIViewController = UIViewController()
         let demo3:UIViewController = UIViewController()
         let demo4:UIViewController = UIViewController()
         let demo5:UIViewController = UIViewController()
-        demo.view.backgroundColor = UIColor.redColor()
         demo2.view.backgroundColor = UIColor.whiteColor()
         demo3.view.backgroundColor = UIColor.grayColor()
         demo4.view.backgroundColor = UIColor.orangeColor()
