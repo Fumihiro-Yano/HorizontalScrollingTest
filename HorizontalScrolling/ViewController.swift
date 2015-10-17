@@ -6,46 +6,6 @@
 //  Copyright © 2015年 矢野史洋. All rights reserved.
 //
 
-//import UIKit
-//
-//class ViewController: UIViewController {
-//
-//    override func viewDidLoad() {
-//        super.viewDidLoad()
-////        let pageController:UIPageViewController = UIPageViewController(transitionStyle: UIPageViewControllerTransitionStyle.Scroll, navigationOrientation: UIPageViewControllerNavigationOrientation.Horizontal, options: nil)
-////        
-////        let navigationController:SwipeBetweenViewControllers = SwipeBetweenViewControllers(rootViewController: pageController)
-////        
-////        // Override point for customization after application launch.
-////        let demo:UIViewController = UIViewController()
-////        let demo2:UIViewController = UIViewController()
-////        let demo3:UIViewController = UIViewController()
-////        let demo4:UIViewController = UIViewController()
-////        let demo5:UIViewController = UIViewController()
-////        demo.view.backgroundColor = UIColor.redColor()
-////        demo2.view.backgroundColor = UIColor.whiteColor()
-////        demo3.view.backgroundColor = UIColor.grayColor()
-////        demo4.view.backgroundColor = UIColor.orangeColor()
-////        demo5.view.backgroundColor = UIColor.brownColor()
-////        
-////        navigationController.viewControllerArray = [demo,demo2,demo3,demo4,demo5]
-//        
-//        
-//        
-//        
-//        
-//        
-//    }
-//
-//    override func didReceiveMemoryWarning() {
-//        super.didReceiveMemoryWarning()
-//        // Dispose of any resources that can be recreated.
-//    }
-//
-//
-//}
-//
-
 import UIKit
 
 
@@ -55,6 +15,7 @@ class ViewController: UIViewController , UIScrollViewDelegate {
         mainScrollView = UIScrollView()
         selectionBar = UIView()
         button = UIButton()
+        buttonArray = []
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
     
@@ -62,6 +23,7 @@ class ViewController: UIViewController , UIScrollViewDelegate {
         mainScrollView = UIScrollView()
         selectionBar = UIView()
         button = UIButton()
+        buttonArray = []
         super.init(coder: aDecoder)
     }
     
@@ -70,6 +32,7 @@ class ViewController: UIViewController , UIScrollViewDelegate {
     var pageControl: UIPageControl!
     var buttonViews: UIView!
     var button :UIButton!
+    var pastbutton :UIButton!
     
     
     //%%% customizeable button attributes
@@ -81,16 +44,16 @@ class ViewController: UIViewController , UIScrollViewDelegate {
     let ANIMATION_SPEED = 0.2 //%%% the number of seconds it takes to complete the animation
     let SELECTOR_Y_BUFFER:CGFloat = 40 //%%% the y-value of the bar that shows what page you are on (0 is the top)
     let SELECTOR_HEIGHT:CGFloat = 4 //%%% thickness of the selector bar
-    
     let X_OFFSET:CGFloat = 8 //%%% for some reason there's a little bit of a glitchy offset.  I'm going to look for a better workaround in the future
 
     var currentPageIndex :Int = 0
+    var pastpage :Int = 0;
     
     var selectionBar :UIView
     var panGestureRecognizer :UIPanGestureRecognizer?
     var buttonText :[String] = []
     var viewArray: NSArray = []
-    
+    var buttonArray: [AnyObject]
     
     
 //    var pageImagesArr = ["tutorial_page_1.png","tutorial_page_2.png","tutorial_page_3.png"];
@@ -151,11 +114,6 @@ class ViewController: UIViewController , UIScrollViewDelegate {
         pageControl.userInteractionEnabled = false
     }
     
-    func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
-        let pageNum = mainScrollView.bounds.origin.x / mainScrollView.frame.width;
-        pageControl.currentPage = Int(pageNum);
-    }
-    
     func setupSegmentButtons() {
         let numViews :Int = viewArray.count
         buttonViews = UIView(frame: CGRectMake(0,(self.navigationController?.navigationBar.frame.size.height)! + 20, mainScrollView.frame.width, 50))
@@ -175,11 +133,12 @@ class ViewController: UIViewController , UIScrollViewDelegate {
             button.backgroundColor = UIColor(red: 0.03, green: 0.07, blue: 0.08, alpha: 1) //%%% buttoncolors
             button.addTarget(self, action: "tapSegmentButtonAction:", forControlEvents: UIControlEvents.TouchUpInside)
             button.setTitle(buttonText[i], forState:UIControlState.Normal) //%%%buttontitle
+            buttonArray.append(button)
         }
         self.setupSelector()
+        button = buttonArray[pageControl.currentPage] as! UIButton
     }
     
-//    %%% sets up the selection bar under the buttons on the navigation bar
     func setupSelector() {
         selectionBar = UIView(frame: CGRectMake(X_BUFFER, SELECTOR_Y_BUFFER,(self.view.frame.size.width-2*X_BUFFER)/CGFloat(viewArray.count), SELECTOR_HEIGHT))
         selectionBar.backgroundColor = UIColor.greenColor() //%%% sbcolor
@@ -194,29 +153,45 @@ class ViewController: UIViewController , UIScrollViewDelegate {
 
     
     func tapSegmentButtonAction(button:UIButton) {
-      //mainScrollView.contentOffset = CGPointMake(mainScrollView.frame.size.width * CGFloat(button.tag), 0)
       let pagePoint = CGPointMake(mainScrollView.frame.size.width * CGFloat(button.tag), 0);
       mainScrollView.setContentOffset(pagePoint, animated: true);
     }
     
     
     func scrollViewDidScroll(scrollView: UIScrollView) {
-        NSLog("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
         let xFromCenter:CGFloat = self.view.frame.size.width - mainScrollView.contentOffset.x //%%% positive for right swipe, negative for left
-        
         let xCoor:CGFloat = X_BUFFER + selectionBar.frame.size.width * CGFloat(currentPageIndex + 1);
-        
         selectionBar.frame = CGRectMake(xCoor-xFromCenter/CGFloat(viewArray.count), selectionBar.frame.origin.y, selectionBar.frame.size.width, selectionBar.frame.size.height);
+        self.buttonWhiteColor()
+        self.getPage()
+        self.buttonGreenColor()
     }
     
     func scrollViewWillBeginDecelerating(scrollView : UIScrollView) {
-        self.buttonChangeColor()
+        
     }
     
-    func buttonChangeColor() {
-        button.tag = 0;
-        NSLog("=======================================================================%d",button.tag)
+    func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
+    }
+    
+    func getPage() {
+        pastpage = pageControl.currentPage;
+        let pageNum = mainScrollView.bounds.origin.x / mainScrollView.frame.width;
+        pageControl.currentPage = Int(pageNum);
+//        NSLog("=======================button.tag===========================%d",button.tag);
+//        NSLog("=======================pageControl.currentPage===========================%d",pageControl.currentPage);
+//        NSLog("=======================pastpage===========================%d",pastpage);
+    }
+    
+    func buttonGreenColor() {
+        NSLog("buttonGreenColorbuttonGreenColorbuttonGreenColorbuttonGreenColorbuttonGreenColorbuttonGreenColor%d",pageControl.currentPage)
+        button = buttonArray[pageControl.currentPage] as! UIButton
         button.setTitleColor(UIColor.greenColor(), forState: .Normal)
+    }
+    
+    func buttonWhiteColor() {
+          pastbutton = buttonArray[pastpage] as! UIButton
+          pastbutton.setTitleColor(UIColor.whiteColor(), forState: .Normal)
     }
     
     override func didReceiveMemoryWarning() {
