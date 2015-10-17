@@ -70,7 +70,7 @@ class ViewController: UIViewController , UIScrollViewDelegate {
                 let demo4:UIView = UIView()
                 let demo5:UIView = UIView()
                 demo.backgroundColor = UIColor.redColor()
-                demo2.backgroundColor = UIColor.whiteColor()
+                demo2.backgroundColor = UIColor.blueColor()
                 demo3.backgroundColor = UIColor.grayColor()
                 demo4.backgroundColor = UIColor.orangeColor()
                 demo5.backgroundColor = UIColor.brownColor()
@@ -81,13 +81,15 @@ class ViewController: UIViewController , UIScrollViewDelegate {
         mainScrollView.delegate = self;
         mainScrollView.showsHorizontalScrollIndicator = false;
         mainScrollView.showsVerticalScrollIndicator = false;
+        mainScrollView.backgroundColor = UIColor.whiteColor()
         
         var innerScrollFrame:CGRect = mainScrollView.bounds;
         
         for (var i = 0; i < viewArray.count; i++) {
         
             let iv:UIView = viewArray[i] as! UIView
-            iv.frame = mainScrollView.frame;
+            iv.frame = CGRectMake(mainScrollView.frame.origin.x + 10,mainScrollView.frame.origin.y,mainScrollView.frame.size.width - 20,mainScrollView.frame.size.height)
+                //mainScrollView.frame;
             iv.tag = i + C_IMAGEVIEW_TAG;
             
             let pageScrollView = UIScrollView(frame: innerScrollFrame)
