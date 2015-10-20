@@ -9,7 +9,7 @@
 import UIKit
 
 
-class ViewController: UIViewController , UIScrollViewDelegate {
+class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewDelegate, UICollectionViewDataSource {
     
     required override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
         mainScrollView = UIScrollView()
@@ -33,7 +33,6 @@ class ViewController: UIViewController , UIScrollViewDelegate {
     var buttonViews: UIView!
     var button :UIButton!
     var pastbutton :UIButton!
-    
     
     //%%% customizeable button attributes
     let X_BUFFER:CGFloat = 0  //%%% the number of pixels on either side of the segment
@@ -64,13 +63,14 @@ class ViewController: UIViewController , UIScrollViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "Home";
+    
                 let demo:UIView = UIView()
                 let demo2:UIView = UIView()
                 let demo3:UIView = UIView()
                 let demo4:UIView = UIView()
                 let demo5:UIView = UIView()
                 demo.backgroundColor = UIColor.redColor()
-                demo2.backgroundColor = UIColor.whiteColor()
+                demo2.backgroundColor = UIColor.blueColor()
                 demo3.backgroundColor = UIColor.grayColor()
                 demo4.backgroundColor = UIColor.orangeColor()
                 demo5.backgroundColor = UIColor.brownColor()
@@ -81,14 +81,39 @@ class ViewController: UIViewController , UIScrollViewDelegate {
         mainScrollView.delegate = self;
         mainScrollView.showsHorizontalScrollIndicator = false;
         mainScrollView.showsVerticalScrollIndicator = false;
+        mainScrollView.backgroundColor = UIColor.whiteColor()
+        mainScrollView.tag = 1;
         
         var innerScrollFrame:CGRect = mainScrollView.bounds;
         
         for (var i = 0; i < viewArray.count; i++) {
         
             let iv:UIView = viewArray[i] as! UIView
-            iv.frame = mainScrollView.frame;
+            iv.frame = CGRectMake(mainScrollView.frame.origin.x + 10,mainScrollView.frame.origin.y + 60,mainScrollView.frame.size.width - 20,mainScrollView.frame.size.height)
+                //mainScrollView.frame;
             iv.tag = i + C_IMAGEVIEW_TAG;
+            
+            
+            let myCollectionView : UICollectionView!
+            // CollectionViewのレイアウトを生成.
+            let layout = UICollectionViewFlowLayout()
+            // Cell一つ一つの大きさ.
+            layout.itemSize = CGSizeMake(145, 180)
+            // Cellのマージン.
+            layout.sectionInset = UIEdgeInsetsMake(0, 0, 5, 0)
+            // セクション毎のヘッダーサイズ.
+            //layout.headerReferenceSize = CGSizeMake(100,30)
+            // CollectionViewを生成.
+            myCollectionView = UICollectionView(frame: CGRectMake(0,0, self.view.frame.size.width - 20, self.view.frame.size.height), collectionViewLayout: layout)
+            // Cellに使われるクラスを登録.
+            let nib = UINib(nibName: "CustomUICollectionViewCell", bundle: nil)
+//            myCollectionView.registerClass(CustomUICollectionViewCell.self, forCellWithReuseIdentifier: "MyCell")
+            myCollectionView.registerNib(nib, forCellWithReuseIdentifier: "MyCell")
+            myCollectionView.delegate = self
+            myCollectionView.dataSource = self
+            
+            iv.addSubview(myCollectionView);
+            
             
             let pageScrollView = UIScrollView(frame: innerScrollFrame)
 
@@ -153,18 +178,20 @@ class ViewController: UIViewController , UIScrollViewDelegate {
 
     
     func tapSegmentButtonAction(button:UIButton) {
-      let pagePoint = CGPointMake(mainScrollView.frame.size.width * CGFloat(button.tag), 0);
+      let pagePoint = CGPointMake(mainScrollView.frame.size.width * CGFloat(button.tag), mainScrollView.frame.origin.y - 65);
       mainScrollView.setContentOffset(pagePoint, animated: true);
     }
     
     
     func scrollViewDidScroll(scrollView: UIScrollView) {
-        let xFromCenter:CGFloat = self.view.frame.size.width - mainScrollView.contentOffset.x //%%% positive for right swipe, negative for left
-        let xCoor:CGFloat = X_BUFFER + selectionBar.frame.size.width * CGFloat(currentPageIndex + 1);
-        selectionBar.frame = CGRectMake(xCoor-xFromCenter/CGFloat(viewArray.count), selectionBar.frame.origin.y, selectionBar.frame.size.width, selectionBar.frame.size.height);
-        self.buttonWhiteColor()
-        self.getPage()
-        self.buttonGreenColor()
+        if(scrollView.tag == 1) {
+          let xFromCenter:CGFloat = self.view.frame.size.width - mainScrollView.contentOffset.x //%%% positive for right swipe, negative for left
+          let xCoor:CGFloat = X_BUFFER + selectionBar.frame.size.width * CGFloat(currentPageIndex + 1);
+          selectionBar.frame = CGRectMake(xCoor-xFromCenter/CGFloat(viewArray.count), selectionBar.frame.origin.y, selectionBar.frame.size.width, selectionBar.frame.size.height);
+          self.buttonWhiteColor()
+          self.getPage()
+          self.buttonGreenColor()
+        }
     }
     
     func scrollViewWillBeginDecelerating(scrollView : UIScrollView) {
@@ -178,9 +205,6 @@ class ViewController: UIViewController , UIScrollViewDelegate {
         pastpage = pageControl.currentPage;
         let pageNum = mainScrollView.bounds.origin.x / mainScrollView.frame.width;
         pageControl.currentPage = Int(pageNum);
-//        NSLog("=======================button.tag===========================%d",button.tag);
-//        NSLog("=======================pageControl.currentPage===========================%d",pageControl.currentPage);
-//        NSLog("=======================pastpage===========================%d",pastpage);
     }
     
     func buttonGreenColor() {
@@ -194,6 +218,44 @@ class ViewController: UIViewController , UIScrollViewDelegate {
           pastbutton.setTitleColor(UIColor.whiteColor(), forState: .Normal)
     }
     
+    /*
+    Cellが選択された際に呼び出される
+    */
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        
+        print("Num: \(indexPath.row)")
+        
+    }
+    
+    /*
+    Cellの総数を返す
+    */
+    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 100
+    }
+    
+    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int{
+        return 1
+    }
+    
+    /*
+    Cellに値を設定する
+    */
+    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+        
+        let cell : CustomUICollectionViewCell = collectionView.dequeueReusableCellWithReuseIdentifier("MyCell", forIndexPath: indexPath) as! CustomUICollectionViewCell
+//        cell.textLabel?.text = indexPath.row.description
+        cell.priceLabel?.text = "¥1000"
+        let cellmainImage = UIImage(named: "Vegetables.jpg")
+        let goodImage = UIImage(named: "good.png")
+        let commentImage = UIImage(named: "comment.png")
+        cell.cellmainImageView.image = cellmainImage
+        cell.goodImageView.image = goodImage
+        cell.commentImageView.image = commentImage
+        cell.backgroundColor = UIColor.whiteColor()
+        return cell
+    }
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
