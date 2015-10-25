@@ -16,6 +16,7 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
         selectionBar = UIView()
         button = UIButton()
         buttonArray = []
+        pageScrollViewArray = []
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
     
@@ -24,11 +25,13 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
         selectionBar = UIView()
         button = UIButton()
         buttonArray = []
+        pageScrollViewArray = []
         super.init(coder: aDecoder)
     }
     
     
     var mainScrollView: UIScrollView!
+    var scrollViewHeader: UIScrollView!
     var pageControl: UIPageControl!
     var buttonViews: UIView!
     var button :UIButton!
@@ -52,8 +55,16 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
     var panGestureRecognizer :UIPanGestureRecognizer?
     var buttonText :[String] = []
     var viewArray: NSArray = []
+    var pageScrollViewArray : [AnyObject]
     var buttonArray: [AnyObject]
+    var scrollBeginingPoint: CGPoint!
     
+    // 画面に映る最も左端の画像のインデックス
+    var leftImageIndex:NSInteger = 0
+    // 画面外に待機している両端の画像のインデックス
+    var leftViewIndex :NSInteger = 0
+    var rightViewIndex:NSInteger = 0
+    var startScroll:Bool = false
     
 //    var pageImagesArr = ["tutorial_page_1.png","tutorial_page_2.png","tutorial_page_3.png"];
     
@@ -76,8 +87,9 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
                 demo5.backgroundColor = UIColor.brownColor()
 
         viewArray = [demo,demo2,demo3,demo4,demo5]
-        mainScrollView = UIScrollView(frame: self.view.bounds)
-        mainScrollView.pagingEnabled = true;
+        mainScrollView = UIScrollView()
+        mainScrollView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)
+        mainScrollView.pagingEnabled = true
         mainScrollView.delegate = self;
         mainScrollView.showsHorizontalScrollIndicator = false;
         mainScrollView.showsVerticalScrollIndicator = false;
@@ -85,6 +97,13 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
         mainScrollView.tag = 1;
         
         var innerScrollFrame:CGRect = mainScrollView.bounds;
+        var innerFramePositionX = mainScrollView.frame.size.width * 10000
+        scrollViewHeader = UIScrollView(frame: CGRectMake(0,(self.navigationController?.navigationBar.frame.size.height)! + 20, self.view.bounds.width, 50))
+        scrollViewHeader.showsHorizontalScrollIndicator = false
+        scrollViewHeader.showsVerticalScrollIndicator = false
+        scrollViewHeader.pagingEnabled = true
+        scrollViewHeader.delegate = self
+        scrollViewHeader.tag = 2
         
         for (var i = 0; i < viewArray.count; i++) {
         
@@ -102,12 +121,10 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
             // Cellのマージン.
             layout.sectionInset = UIEdgeInsetsMake(0, 0, 5, 0)
             // セクション毎のヘッダーサイズ.
-            //layout.headerReferenceSize = CGSizeMake(100,30)
             // CollectionViewを生成.
             myCollectionView = UICollectionView(frame: CGRectMake(0,0, self.view.frame.size.width - 20, self.view.frame.size.height), collectionViewLayout: layout)
             // Cellに使われるクラスを登録.
             let nib = UINib(nibName: "CustomUICollectionViewCell", bundle: nil)
-//            myCollectionView.registerClass(CustomUICollectionViewCell.self, forCellWithReuseIdentifier: "MyCell")
             myCollectionView.registerNib(nib, forCellWithReuseIdentifier: "MyCell")
             myCollectionView.delegate = self
             myCollectionView.dataSource = self
@@ -115,49 +132,76 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
             iv.addSubview(myCollectionView);
             
             
-            let pageScrollView = UIScrollView(frame: innerScrollFrame)
+            let pageScrollView = UIScrollView(frame: CGRectMake(innerFramePositionX,65, self.mainScrollView.bounds.width, self.mainScrollView.bounds.height))
 
             pageScrollView.contentSize = iv.bounds.size;
             pageScrollView.delegate = self
             pageScrollView.showsHorizontalScrollIndicator = false;
             pageScrollView.showsVerticalScrollIndicator = false;
             pageScrollView.addSubview(iv);
+            pageScrollView.tag = 10 * i
             
-            mainScrollView.addSubview(pageScrollView);
+            self.mainScrollView.addSubview(pageScrollView);
+            pageScrollViewArray.append(pageScrollView)
             
             if (i < 4) {
                 innerScrollFrame.origin.x = innerScrollFrame.origin.x + innerScrollFrame.size.width;
+                 NSLog("This is innerFramePositionX ^^^^^^^^^^^^  innerFramePositionX : %d",Int(innerFramePositionX))
+                innerFramePositionX = innerFramePositionX + self.mainScrollView.bounds.width
             }
         }
         
-        mainScrollView.contentSize = CGSizeMake(innerScrollFrame.origin.x + innerScrollFrame.size.width, 0);
+        let startPoint = CGPointMake(mainScrollView.frame.size.width * 10000  + mainScrollView.frame.size.width * 2, 0);
+        mainScrollView.contentSize = CGSizeMake(mainScrollView.frame.size.width * CGFloat(viewArray.count * 10000), 0);
         self.view.addSubview(mainScrollView);
+        mainScrollView.contentOffset = startPoint
+
+        
+        scrollViewHeader.contentSize = CGSizeMake(mainScrollView.frame.size.width * CGFloat(viewArray.count * 10000), 0)
+        self.view.addSubview(scrollViewHeader)
+        scrollViewHeader.contentOffset = startPoint
+        
         
         pageControl = UIPageControl();
         pageControl.numberOfPages = viewArray.count
         pageControl.currentPage = 0
         pageControl.userInteractionEnabled = false
+        
+        // 画面の最も左に表示されている画像のインデックス
+        leftImageIndex = 0
+        
+        leftViewIndex  = 0
+        rightViewIndex = viewArray.count - 1
+        
+        NSLog("This is mainscrollview ^^^^^^^^^^^^  frame-width : %d",Int(mainScrollView.frame.width))
+        NSLog("This is mainscrollview ^^^^^^^^^^^^  bounds-width : %d",Int(mainScrollView.bounds.width))
+        NSLog("This is mainscrollview ^^^^^^^^^^^^  frame-origin.x : %d",Int(mainScrollView.frame.origin.x))
+        NSLog("This is mainscrollview ^^^^^^^^^^^^  bounds-origin.x : %d",Int(mainScrollView.bounds.origin.x))
+        NSLog("This is self.view ^^^^^^^^^^^^  frame-width : %d",Int(self.view.frame.width))
+        NSLog("This is self.view ^^^^^^^^^^^^  bounds-width : %d",Int(self.view.frame.width))
+        NSLog("This is self.view ^^^^^^^^^^^^  frame-origin.x : %d",Int(self.view.frame.origin.x))
+        NSLog("This is self.view ^^^^^^^^^^^^  bounds-origin.x : %d",Int(self.view.frame.origin.x))
+        NSLog("This is self.view ^^^^^^^^^^^^  frame.size.width : %d",Int(self.view.frame.size.width))
+        sleep(3)
+        startScroll = true
     }
     
     func setupSegmentButtons() {
         let numViews :Int = viewArray.count
-        buttonViews = UIView(frame: CGRectMake(0,(self.navigationController?.navigationBar.frame.size.height)! + 20, mainScrollView.frame.width, 50))
-        buttonViews.backgroundColor = UIColor.blueColor()
-        self.view.addSubview(buttonViews)
-        
+        // ScrollViewHeaderの設定.
         if (buttonText.count == 0) {
-            buttonText = ["Home","second","third","fourth","etc","etc","etc","etc"] //%%%buttontitle
+            buttonText = ["first","second","third","fourth","etc","etc","etc","etc"] //%%%buttontitle
         }
         
         for (var i = 0 ; i < numViews; i++) {
-            let frame :CGRect = CGRectMake(X_BUFFER+CGFloat(i)*(self.view.frame.size.width-2*X_BUFFER)/CGFloat(numViews), 0, (self.view.frame.size.width-2*X_BUFFER)/CGFloat(numViews), HEIGHT)
+//            let frame :CGRect = CGRectMake(X_BUFFER+CGFloat(i)*(self.view.frame.size.width-2*X_BUFFER)/CGFloat(numViews), 0, (self.view.frame.size.width-2*X_BUFFER)/CGFloat(numViews), HEIGHT)
+            let frame :CGRect = CGRectMake(mainScrollView.frame.size.width * 10000 + self.view.frame.size.width * CGFloat(i), 0, self.view.frame.size.width, HEIGHT)
             button = UIButton(frame: frame)
-            buttonViews.addSubview(button)
-            
-            button.tag = i //%%% IMPORTANT: if you make your own custom buttons, you have to tag them appropriately
-            button.backgroundColor = UIColor(red: 0.03, green: 0.07, blue: 0.08, alpha: 1) //%%% buttoncolors
+            scrollViewHeader.addSubview(button)
+            button.tag = i
+            button.backgroundColor = UIColor(red: 0.03, green: 0.07, blue: 0.08, alpha: 1)
             button.addTarget(self, action: "tapSegmentButtonAction:", forControlEvents: UIControlEvents.TouchUpInside)
-            button.setTitle(buttonText[i], forState:UIControlState.Normal) //%%%buttontitle
+            button.setTitle(buttonText[i], forState:UIControlState.Normal)
             buttonArray.append(button)
         }
         self.setupSelector()
@@ -168,39 +212,94 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
         selectionBar = UIView(frame: CGRectMake(X_BUFFER, SELECTOR_Y_BUFFER,(self.view.frame.size.width-2*X_BUFFER)/CGFloat(viewArray.count), SELECTOR_HEIGHT))
         selectionBar.backgroundColor = UIColor.greenColor() //%%% sbcolor
         selectionBar.alpha = 0.8; //%%% sbalpha
-        buttonViews.addSubview(selectionBar)
+        scrollViewHeader.addSubview(selectionBar)
     }
 
     
     override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
         self.setupSegmentButtons()
+        NSLog("This is viewWillAppear ")
     }
-
     
     func tapSegmentButtonAction(button:UIButton) {
       let pagePoint = CGPointMake(mainScrollView.frame.size.width * CGFloat(button.tag), mainScrollView.frame.origin.y - 65);
-      mainScrollView.setContentOffset(pagePoint, animated: true);
+      mainScrollView.setContentOffset(pagePoint, animated: true)
     }
     
-    
-    func scrollViewDidScroll(scrollView: UIScrollView) {
-        if(scrollView.tag == 1) {
-          let xFromCenter:CGFloat = self.view.frame.size.width - mainScrollView.contentOffset.x //%%% positive for right swipe, negative for left
-          let xCoor:CGFloat = X_BUFFER + selectionBar.frame.size.width * CGFloat(currentPageIndex + 1);
-          selectionBar.frame = CGRectMake(xCoor-xFromCenter/CGFloat(viewArray.count), selectionBar.frame.origin.y, selectionBar.frame.size.width, selectionBar.frame.size.height);
-          self.buttonWhiteColor()
-          self.getPage()
-          self.buttonGreenColor()
+    func scrollViewWillBeginDragging(scrollView: UIScrollView) {
+       if(scrollView.tag == 1) {
+        scrollBeginingPoint = scrollView.contentOffset;
+        NSLog("This is scrollBeginingPoint %@",NSStringFromCGPoint(scrollBeginingPoint))
         }
     }
     
-    func scrollViewWillBeginDecelerating(scrollView : UIScrollView) {
-        
+    func scrollViewDidScroll(scrollView: UIScrollView) {
+        if (startScroll) {
+          if(scrollView.tag == 1) {
+          let xFromCenter:CGFloat = self.view.frame.size.width - mainScrollView.contentOffset.x //%%% positive for right swipe, negative for left
+          let xCoor:CGFloat = X_BUFFER + selectionBar.frame.size.width * CGFloat(currentPageIndex + 1);
+          selectionBar.frame = CGRectMake(xCoor-xFromCenter/CGFloat(viewArray.count), selectionBar.frame.origin.y, selectionBar.frame.size.width, selectionBar.frame.size.height);
+            
+//          self.buttonWhiteColor()
+//          self.getPage()
+//          self.buttonGreenColor()
+            var point:CGPoint = scrollView.contentOffset;
+            point.y = 0;
+            scrollView.contentOffset = point;
+         }
+        }
     }
+    
+    func scrollViewDidEndDragging(scrollView: UIScrollView,willDecelerate decelerate: Bool){
+        NSLog("スクロールで指が離れたところ")
+                   }
     
     func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
+            NSLog("This is UIScrollView")
+            if (scrollView.tag == 1) {
+                NSLog("This is UIScrollView tag 1")
+                let currentPoint = scrollView.contentOffset;
+                let scrollHeaderPoint = CGPoint(x: currentPoint.x, y: 0)
+                scrollViewHeader.setContentOffset(scrollHeaderPoint, animated: true)
+                NSLog("This is currentPointPoint %@",NSStringFromCGPoint(currentPoint))
+                var direction  :NSInteger = 0
+                var viewIndex  :NSInteger = 0
+                
+                if(scrollBeginingPoint?.x < currentPoint.x){
+                    NSLog("右->左スクロール")
+                    direction  = 1
+                    viewIndex  = leftViewIndex
+                    self.scrollWithDirection(direction,viewIndex: viewIndex)
+                }else{
+                    NSLog("左->右スクロール")
+                    direction  = -1
+                    viewIndex  = rightViewIndex
+                    self.scrollWithDirection(direction,viewIndex: viewIndex)
+                }
+        }
     }
     
+    func scrollWithDirection(direction:NSInteger,viewIndex:NSInteger) {
+        NSLog("This is direction ^^^^^^^^^^^^  direction : %d",direction)
+        NSLog("This is viewIndex ^^^^^^^^^^^^  viewIndex : %d",viewIndex)
+        let iv = self.pageScrollViewArray[viewIndex] as! UIView
+        iv.frame.origin.x += mainScrollView.frame.width * CGFloat(self.viewArray.count * direction)
+        
+        NSLog("This is iv.frame.origin.x ^^^^^^^^^^^^ iv.frame.origin.x : %d",Int(iv.frame.origin.x))
+        
+        leftImageIndex += direction
+        
+        leftViewIndex  = self.addImageIndex(leftViewIndex , incremental: direction)
+        rightViewIndex = self.addImageIndex(rightViewIndex, incremental: direction)
+    }
+    
+    func addImageIndex(index:NSInteger, incremental:NSInteger) -> NSInteger {
+        return (index + incremental + self.viewArray.count) % self.viewArray.count
+    }
+    
+    
+
     func getPage() {
         pastpage = pageControl.currentPage;
         let pageNum = mainScrollView.bounds.origin.x / mainScrollView.frame.width;
@@ -255,7 +354,7 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
         cell.backgroundColor = UIColor.whiteColor()
         return cell
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
