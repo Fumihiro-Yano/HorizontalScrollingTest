@@ -37,16 +37,15 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
     var button :UIButton!
     var pastbutton :UIButton!
     
-    //%%% customizeable button attributes
-    let X_BUFFER:CGFloat = 0  //%%% the number of pixels on either side of the segment
-    let Y_BUFFER:CGFloat = 14 //%%% number of pixels on top of the segment
-    let HEIGHT:CGFloat = 50   //%%% height of the segment
+    let X_BUFFER:CGFloat = 0
+    let Y_BUFFER:CGFloat = 14
+    let HEIGHT:CGFloat = 50
     
-    //%%% customizeable selector bar attributes (the black bar under the buttons)
-    let ANIMATION_SPEED = 0.2 //%%% the number of seconds it takes to complete the animation
-    let SELECTOR_Y_BUFFER:CGFloat = 40 //%%% the y-value of the bar that shows what page you are on (0 is the top)
-    let SELECTOR_HEIGHT:CGFloat = 4 //%%% thickness of the selector bar
-    let X_OFFSET:CGFloat = 8 //%%% for some reason there's a little bit of a glitchy offset.  I'm going to look for a better workaround in the future
+    
+    let ANIMATION_SPEED = 0.2
+    let SELECTOR_Y_BUFFER:CGFloat = 40
+    let SELECTOR_HEIGHT:CGFloat = 4
+    let X_OFFSET:CGFloat = 8
 
     var currentPageIndex :Int = 0
     var pastpage :Int = 0;
@@ -64,7 +63,12 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
     // 画面外に待機している両端の画像のインデックス
     var leftViewIndex :NSInteger = 0
     var rightViewIndex:NSInteger = 0
-    var startScroll:Bool = false
+    
+    
+    var scrollHeadleftImageIndex:NSInteger = 0
+    var scrollHeadleftViewIndex :NSInteger = 0
+    var scrollHeadrightViewIndex:NSInteger = 0
+    var scrollHeadBeginingPoint: CGPoint!
     
 //    var pageImagesArr = ["tutorial_page_1.png","tutorial_page_2.png","tutorial_page_3.png"];
     
@@ -169,9 +173,14 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
         
         // 画面の最も左に表示されている画像のインデックス
         leftImageIndex = 0
-        
         leftViewIndex  = 0
         rightViewIndex = viewArray.count - 1
+        
+        //scrollHeadの最も左に表示されているインデックス
+        scrollHeadleftImageIndex = leftImageIndex
+        scrollHeadleftViewIndex = leftViewIndex
+        scrollHeadrightViewIndex = rightViewIndex
+        
         
         NSLog("This is mainscrollview ^^^^^^^^^^^^  frame-width : %d",Int(mainScrollView.frame.width))
         NSLog("This is mainscrollview ^^^^^^^^^^^^  bounds-width : %d",Int(mainScrollView.bounds.width))
@@ -182,8 +191,6 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
         NSLog("This is self.view ^^^^^^^^^^^^  frame-origin.x : %d",Int(self.view.frame.origin.x))
         NSLog("This is self.view ^^^^^^^^^^^^  bounds-origin.x : %d",Int(self.view.frame.origin.x))
         NSLog("This is self.view ^^^^^^^^^^^^  frame.size.width : %d",Int(self.view.frame.size.width))
-        sleep(3)
-        startScroll = true
     }
     
     func setupSegmentButtons() {
@@ -194,7 +201,6 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
         }
         
         for (var i = 0 ; i < numViews; i++) {
-//            let frame :CGRect = CGRectMake(X_BUFFER+CGFloat(i)*(self.view.frame.size.width-2*X_BUFFER)/CGFloat(numViews), 0, (self.view.frame.size.width-2*X_BUFFER)/CGFloat(numViews), HEIGHT)
             let frame :CGRect = CGRectMake(mainScrollView.frame.size.width * 10000 + self.view.frame.size.width * CGFloat(i), 0, self.view.frame.size.width, HEIGHT)
             button = UIButton(frame: frame)
             scrollViewHeader.addSubview(button)
@@ -223,19 +229,22 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
     }
     
     func tapSegmentButtonAction(button:UIButton) {
-      let pagePoint = CGPointMake(mainScrollView.frame.size.width * CGFloat(button.tag), mainScrollView.frame.origin.y - 65);
+//      let pagePoint = CGPointMake(mainScrollView.frame.size.width * 10000 + mainScrollView.frame.size.width * CGFloat(button.tag), 0);
+        let pagePoint = scrollViewHeader.contentOffset
       mainScrollView.setContentOffset(pagePoint, animated: true)
     }
     
     func scrollViewWillBeginDragging(scrollView: UIScrollView) {
        if(scrollView.tag == 1) {
-        scrollBeginingPoint = scrollView.contentOffset;
+        scrollBeginingPoint = scrollView.contentOffset
         NSLog("This is scrollBeginingPoint %@",NSStringFromCGPoint(scrollBeginingPoint))
+        }
+       if(scrollView.tag == 2){
+        scrollHeadBeginingPoint = scrollView.contentOffset
         }
     }
     
     func scrollViewDidScroll(scrollView: UIScrollView) {
-        if (startScroll) {
           if(scrollView.tag == 1) {
           let xFromCenter:CGFloat = self.view.frame.size.width - mainScrollView.contentOffset.x //%%% positive for right swipe, negative for left
           let xCoor:CGFloat = X_BUFFER + selectionBar.frame.size.width * CGFloat(currentPageIndex + 1);
@@ -248,7 +257,6 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
             point.y = 0;
             scrollView.contentOffset = point;
          }
-        }
     }
     
     func scrollViewDidEndDragging(scrollView: UIScrollView,willDecelerate decelerate: Bool){
@@ -263,6 +271,7 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
                 let scrollHeaderPoint = CGPoint(x: currentPoint.x, y: 0)
                 scrollViewHeader.setContentOffset(scrollHeaderPoint, animated: true)
                 NSLog("This is currentPointPoint %@",NSStringFromCGPoint(currentPoint))
+                
                 var direction  :NSInteger = 0
                 var viewIndex  :NSInteger = 0
                 
@@ -270,21 +279,44 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
                     NSLog("右->左スクロール")
                     direction  = 1
                     viewIndex  = leftViewIndex
-                    self.scrollWithDirection(direction,viewIndex: viewIndex)
+                    self.scrollWithDirection(direction,viewIndex: viewIndex, scrollViewTag: scrollView.tag)
                 }else{
                     NSLog("左->右スクロール")
                     direction  = -1
                     viewIndex  = rightViewIndex
-                    self.scrollWithDirection(direction,viewIndex: viewIndex)
+                    self.scrollWithDirection(direction,viewIndex: viewIndex, scrollViewTag: scrollView.tag)
                 }
-        }
+            }
+            if (scrollView.tag == 2) {
+              NSLog("This is UIScrollView tag 2")
+                let scrollHeadCurrentPoint = scrollView.contentOffset;
+                var scrollHeaddirection  :NSInteger = 0
+                var scrollHeadviewIndex  :NSInteger = 0
+                
+                if(scrollHeadBeginingPoint?.x <  scrollHeadCurrentPoint.x){
+                    NSLog("右->左スクロール")
+                    scrollHeaddirection  = 1
+                    scrollHeadviewIndex  = scrollHeadleftViewIndex
+                    self.scrollWithDirection(scrollHeaddirection,viewIndex: scrollHeadviewIndex, scrollViewTag: scrollView.tag)
+                }else{
+                    NSLog("左->右スクロール")
+                    scrollHeaddirection  = -1
+                    scrollHeadviewIndex  = scrollHeadrightViewIndex
+                    self.scrollWithDirection(scrollHeaddirection,viewIndex: scrollHeadviewIndex, scrollViewTag: scrollView.tag)
+                }
+            }
     }
     
-    func scrollWithDirection(direction:NSInteger,viewIndex:NSInteger) {
+    func scrollWithDirection(direction:NSInteger,viewIndex:NSInteger,scrollViewTag: NSInteger) {
+      if (scrollViewTag == 1) {
         NSLog("This is direction ^^^^^^^^^^^^  direction : %d",direction)
         NSLog("This is viewIndex ^^^^^^^^^^^^  viewIndex : %d",viewIndex)
+        //pageScrollViewの位置
         let iv = self.pageScrollViewArray[viewIndex] as! UIView
         iv.frame.origin.x += mainScrollView.frame.width * CGFloat(self.viewArray.count * direction)
+        //buttonの位置
+        let ib = self.buttonArray[viewIndex] as! UIButton
+        ib.frame.origin.x += mainScrollView.frame.width * CGFloat(self.viewArray.count * direction)
         
         NSLog("This is iv.frame.origin.x ^^^^^^^^^^^^ iv.frame.origin.x : %d",Int(iv.frame.origin.x))
         
@@ -292,6 +324,15 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
         
         leftViewIndex  = self.addImageIndex(leftViewIndex , incremental: direction)
         rightViewIndex = self.addImageIndex(rightViewIndex, incremental: direction)
+      }
+      else if (scrollViewTag == 2) {
+        let ib = self.buttonArray[viewIndex] as! UIButton
+        ib.frame.origin.x += mainScrollView.frame.width * CGFloat(self.viewArray.count * direction)
+        NSLog("This is iv.frame.origin.x ^^^^^^^^^^^^ iv.frame.origin.x : %d",Int(ib.frame.origin.x))
+        scrollHeadleftImageIndex += direction
+        scrollHeadleftViewIndex = self.addImageIndex(scrollHeadleftViewIndex, incremental: direction)
+        scrollHeadrightViewIndex = self.addImageIndex(scrollHeadrightViewIndex, incremental: direction)
+        }
     }
     
     func addImageIndex(index:NSInteger, incremental:NSInteger) -> NSInteger {
