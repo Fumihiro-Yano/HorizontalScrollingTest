@@ -42,13 +42,12 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
     let HEIGHT:CGFloat = 50
     
     
-    let ANIMATION_SPEED = 0.2
     let SELECTOR_Y_BUFFER:CGFloat = 40
     let SELECTOR_HEIGHT:CGFloat = 4
     let X_OFFSET:CGFloat = 8
 
     var currentPageIndex :Int = 0
-    var pastpage :Int = 0;
+    var pastPageIndex :Int = 0;
     
     var selectionBar :UIView
     var panGestureRecognizer :UIPanGestureRecognizer?
@@ -69,9 +68,6 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
     var scrollHeadleftViewIndex :NSInteger = 0
     var scrollHeadrightViewIndex:NSInteger = 0
     var scrollHeadBeginingPoint: CGPoint!
-    
-//    var pageImagesArr = ["tutorial_page_1.png","tutorial_page_2.png","tutorial_page_3.png"];
-    
     
     let C_IMAGEVIEW_TAG = 1000;
     
@@ -271,7 +267,15 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
                 let scrollHeaderPoint = CGPoint(x: currentPoint.x, y: 0)
                 scrollViewHeader.setContentOffset(scrollHeaderPoint, animated: true)
                 NSLog("This is currentPointPoint %@",NSStringFromCGPoint(currentPoint))
+                let changeingPage = abs(scrollBeginingPoint.x - currentPoint.x)
                 
+                NSLog("================================This is scrollBeginingPoint.x ===============================%d",Int(scrollBeginingPoint.x))
+                NSLog("================================This is currentPoint.x ===============================%d",Int(currentPoint.x))
+                NSLog("================================This is currentPointPoint ===============================%d",Int(changeingPage))
+                NSLog("================================This is currentPointPoint ===============================%d",Int(pageControl.currentPage))
+                
+                
+                if ((Int(changeingPage) >= Int(self.view.frame.size.width))){
                 var direction  :NSInteger = 0
                 var viewIndex  :NSInteger = 0
                 
@@ -286,6 +290,7 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
                     viewIndex  = rightViewIndex
                     self.scrollWithDirection(direction,viewIndex: viewIndex, scrollViewTag: scrollView.tag)
                 }
+              }
             }
             if (scrollView.tag == 2) {
               NSLog("This is UIScrollView tag 2")
@@ -342,7 +347,7 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
     
 
     func getPage() {
-        pastpage = pageControl.currentPage;
+        pastPageIndex = pageControl.currentPage;
         let pageNum = mainScrollView.bounds.origin.x / mainScrollView.frame.width;
         pageControl.currentPage = Int(pageNum);
     }
@@ -354,7 +359,7 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
     }
     
     func buttonWhiteColor() {
-          pastbutton = buttonArray[pastpage] as! UIButton
+          pastbutton = buttonArray[pastPageIndex] as! UIButton
           pastbutton.setTitleColor(UIColor.whiteColor(), forState: .Normal)
     }
     
