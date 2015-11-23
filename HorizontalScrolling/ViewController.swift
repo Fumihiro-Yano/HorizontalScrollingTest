@@ -9,7 +9,7 @@
 import UIKit
 
 
-class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewDelegate, UICollectionViewDataSource {
+class ViewController: UIViewController , UIScrollViewDelegate {
     
     required override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
         mainScrollView = UIScrollView()
@@ -36,6 +36,7 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
     var buttonViews: UIView!
     var button :UIButton!
     var pastbutton :UIButton!
+    var collectionViewConfig:CollectionViewConfig?
     
     let X_BUFFER:CGFloat = 0
     let Y_BUFFER:CGFloat = 14
@@ -104,6 +105,7 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
         scrollViewHeader.pagingEnabled = true
         scrollViewHeader.delegate = self
         scrollViewHeader.tag = 2
+        self.collectionViewConfig = CollectionViewConfig()
         
         for (var i = 0; i < viewArray.count; i++) {
         
@@ -111,7 +113,6 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
             iv.frame = CGRectMake(mainScrollView.frame.origin.x + 10,mainScrollView.frame.origin.y + 60,mainScrollView.frame.size.width - 20,mainScrollView.frame.size.height)
                 //mainScrollView.frame;
             iv.tag = i + C_IMAGEVIEW_TAG;
-            
             
             let myCollectionView : UICollectionView!
             // CollectionViewのレイアウトを生成.
@@ -126,8 +127,8 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
             // Cellに使われるクラスを登録.
             let nib = UINib(nibName: "CustomUICollectionViewCell", bundle: nil)
             myCollectionView.registerNib(nib, forCellWithReuseIdentifier: "MyCell")
-            myCollectionView.delegate = self
-            myCollectionView.dataSource = self
+            myCollectionView.delegate = self.collectionViewConfig
+            myCollectionView.dataSource = self.collectionViewConfig
             
             iv.addSubview(myCollectionView);
             
@@ -176,18 +177,7 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
         scrollHeadleftImageIndex = leftImageIndex
         scrollHeadleftViewIndex = leftViewIndex
         scrollHeadrightViewIndex = rightViewIndex
-        
-        
-        NSLog("This is mainscrollview ^^^^^^^^^^^^  frame-width : %d",Int(mainScrollView.frame.width))
-        NSLog("This is mainscrollview ^^^^^^^^^^^^  bounds-width : %d",Int(mainScrollView.bounds.width))
-        NSLog("This is mainscrollview ^^^^^^^^^^^^  frame-origin.x : %d",Int(mainScrollView.frame.origin.x))
-        NSLog("This is mainscrollview ^^^^^^^^^^^^  bounds-origin.x : %d",Int(mainScrollView.bounds.origin.x))
-        NSLog("This is self.view ^^^^^^^^^^^^  frame-width : %d",Int(self.view.frame.width))
-        NSLog("This is self.view ^^^^^^^^^^^^  bounds-width : %d",Int(self.view.frame.width))
-        NSLog("This is self.view ^^^^^^^^^^^^  frame-origin.x : %d",Int(self.view.frame.origin.x))
-        NSLog("This is self.view ^^^^^^^^^^^^  bounds-origin.x : %d",Int(self.view.frame.origin.x))
-        NSLog("This is self.view ^^^^^^^^^^^^  frame.size.width : %d",Int(self.view.frame.size.width))
-    }
+        }
     
     func setupSegmentButtons() {
         let numViews :Int = viewArray.count
@@ -361,44 +351,6 @@ class ViewController: UIViewController , UIScrollViewDelegate, UICollectionViewD
     func buttonWhiteColor() {
           pastbutton = buttonArray[pastPageIndex] as! UIButton
           pastbutton.setTitleColor(UIColor.whiteColor(), forState: .Normal)
-    }
-    
-    /*
-    Cellが選択された際に呼び出される
-    */
-    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        
-        print("Num: \(indexPath.row)")
-        
-    }
-    
-    /*
-    Cellの総数を返す
-    */
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 100
-    }
-    
-    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int{
-        return 1
-    }
-    
-    /*
-    Cellに値を設定する
-    */
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        
-        let cell : CustomUICollectionViewCell = collectionView.dequeueReusableCellWithReuseIdentifier("MyCell", forIndexPath: indexPath) as! CustomUICollectionViewCell
-//        cell.textLabel?.text = indexPath.row.description
-        cell.priceLabel?.text = "¥1000"
-        let cellmainImage = UIImage(named: "Vegetables.jpg")
-        let goodImage = UIImage(named: "good.png")
-        let commentImage = UIImage(named: "comment.png")
-        cell.cellmainImageView.image = cellmainImage
-        cell.goodImageView.image = goodImage
-        cell.commentImageView.image = commentImage
-        cell.backgroundColor = UIColor.whiteColor()
-        return cell
     }
     
     override func didReceiveMemoryWarning() {

@@ -11,14 +11,13 @@
 		E712047F1BD6B341004DD674 /* Vegetables.jpg in Resources */ = {isa = PBXBuildFile; fileRef = E712047E1BD6B341004DD674 /* Vegetables.jpg */; settings = {ASSET_TAGS = (); }; };
 		E712048B1BD701E5004DD674 /* comment.png in Resources */ = {isa = PBXBuildFile; fileRef = E712048A1BD701E5004DD674 /* comment.png */; settings = {ASSET_TAGS = (); }; };
 		E712048D1BD70233004DD674 /* good.png in Resources */ = {isa = PBXBuildFile; fileRef = E712048C1BD70233004DD674 /* good.png */; settings = {ASSET_TAGS = (); }; };
-		E71BF0901BC8352C0016FF84 /* SwipeBetweenViewControllers.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71BF08F1BC8352C0016FF84 /* SwipeBetweenViewControllers.swift */; settings = {ASSET_TAGS = (); }; };
+		E766B7141C02D3E000B48C3D /* CollectionViewConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = E766B7131C02D3E000B48C3D /* CollectionViewConfig.swift */; settings = {ASSET_TAGS = (); }; };
 		E7D241B41BC51FCE0008BC05 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D241B31BC51FCE0008BC05 /* AppDelegate.swift */; };
 		E7D241B61BC51FCE0008BC05 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D241B51BC51FCE0008BC05 /* ViewController.swift */; };
 		E7D241BB1BC51FCE0008BC05 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E7D241BA1BC51FCE0008BC05 /* Assets.xcassets */; };
 		E7D241BE1BC51FCE0008BC05 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E7D241BC1BC51FCE0008BC05 /* LaunchScreen.storyboard */; };
 		E7D241C91BC51FCE0008BC05 /* HorizontalScrollingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D241C81BC51FCE0008BC05 /* HorizontalScrollingTests.swift */; };
 		E7D241D41BC51FCE0008BC05 /* HorizontalScrollingUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D241D31BC51FCE0008BC05 /* HorizontalScrollingUITests.swift */; };
-		E7F5E7731BD36E7100EFC6D4 /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F5E7721BD36E7100EFC6D4 /* TestViewController.swift */; settings = {ASSET_TAGS = (); }; };
 		E7F5E7751BD3749600EFC6D4 /* CustomUICollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F5E7741BD3749600EFC6D4 /* CustomUICollectionViewCell.swift */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
@@ -44,7 +43,7 @@
 		E712047E1BD6B341004DD674 /* Vegetables.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = Vegetables.jpg; path = ../../../Vegetables.jpg; sourceTree = "<group>"; };
 		E712048A1BD701E5004DD674 /* comment.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = comment.png; sourceTree = "<group>"; };
 		E712048C1BD70233004DD674 /* good.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = good.png; sourceTree = "<group>"; };
-		E71BF08F1BC8352C0016FF84 /* SwipeBetweenViewControllers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwipeBetweenViewControllers.swift; sourceTree = "<group>"; };
+		E766B7131C02D3E000B48C3D /* CollectionViewConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewConfig.swift; sourceTree = "<group>"; };
 		E7D241B01BC51FCE0008BC05 /* HorizontalScrolling.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HorizontalScrolling.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7D241B31BC51FCE0008BC05 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E7D241B51BC51FCE0008BC05 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -57,7 +56,6 @@
 		E7D241CF1BC51FCE0008BC05 /* HorizontalScrollingUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HorizontalScrollingUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7D241D31BC51FCE0008BC05 /* HorizontalScrollingUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizontalScrollingUITests.swift; sourceTree = "<group>"; };
 		E7D241D51BC51FCE0008BC05 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		E7F5E7721BD36E7100EFC6D4 /* TestViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
 		E7F5E7741BD3749600EFC6D4 /* CustomUICollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomUICollectionViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -122,11 +120,10 @@
 				E712047D1BD6B2FF004DD674 /* TestImages */,
 				E7D241B31BC51FCE0008BC05 /* AppDelegate.swift */,
 				E7D241B51BC51FCE0008BC05 /* ViewController.swift */,
+				E766B7131C02D3E000B48C3D /* CollectionViewConfig.swift */,
 				E7D241BA1BC51FCE0008BC05 /* Assets.xcassets */,
 				E7D241BC1BC51FCE0008BC05 /* LaunchScreen.storyboard */,
 				E7D241BF1BC51FCE0008BC05 /* Info.plist */,
-				E71BF08F1BC8352C0016FF84 /* SwipeBetweenViewControllers.swift */,
-				E7F5E7721BD36E7100EFC6D4 /* TestViewController.swift */,
 				E7F5E7741BD3749600EFC6D4 /* CustomUICollectionViewCell.swift */,
 				E712047B1BD6AC14004DD674 /* CustomUICollectionViewCell.xib */,
 			);
@@ -288,10 +285,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				E7F5E7751BD3749600EFC6D4 /* CustomUICollectionViewCell.swift in Sources */,
-				E71BF0901BC8352C0016FF84 /* SwipeBetweenViewControllers.swift in Sources */,
 				E7D241B61BC51FCE0008BC05 /* ViewController.swift in Sources */,
-				E7F5E7731BD36E7100EFC6D4 /* TestViewController.swift in Sources */,
 				E7D241B41BC51FCE0008BC05 /* AppDelegate.swift in Sources */,
+				E766B7141C02D3E000B48C3D /* CollectionViewConfig.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
