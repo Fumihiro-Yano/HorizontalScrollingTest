@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SlideMenuControllerSwift
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -17,9 +18,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
         let first: ViewController = ViewController()
+        let left: leftViewController = leftViewController()
+        let right: rightViewController = rightViewController()
+        
         myNavigationController = UINavigationController(rootViewController: first)
+        
+        let slideMenuController = SlideMenuController(mainViewController: myNavigationController!, leftMenuViewController: left, rightMenuViewController: right)
         self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
-        self.window?.rootViewController = myNavigationController
+        self.window?.rootViewController = slideMenuController
         self.window?.makeKeyAndVisible()
         
         return true

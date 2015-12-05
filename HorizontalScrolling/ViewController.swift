@@ -75,6 +75,7 @@ class ViewController: UIViewController , UIScrollViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "Home";
+        self.addLeftBarButtonWithImage(UIImage(named: "menu24.png")!)
     
                 let demo:UIView = UIView()
                 let demo2:UIView = UIView()

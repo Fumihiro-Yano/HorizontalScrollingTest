@@ -1,0 +1,6 @@
+framework module Pods_HorizontalScrolling {
+  umbrella header "Pods-HorizontalScrolling-umbrella.h"
+
+  export *
+  module * { export * }
+}
