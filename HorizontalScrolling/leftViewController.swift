@@ -20,28 +20,24 @@ class leftViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.view.backgroundColor = UIColor.cyanColor()
         self.imageHeaderView = ImageHeaderView.loadNib()
         self.view.addSubview(self.imageHeaderView)
-        // Viewの高さと幅を取得する.
-        let displayWidth: CGFloat =  self.view.frame.width
-        let displayHeight: CGFloat = self.view.frame.height
-        
-        // TableViewの生成する(status barの高さ分ずらして表示).
-        myTableView = UITableView(frame: CGRect(x: 0, y: 160, width: displayWidth, height: displayHeight))
-        
         // Cell名の登録をおこなう.
         //        registerClassだとカスタムセルが見つからない。
         //        myTableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "MyCell")
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        let displayWidth: CGFloat =  self.view.frame.width
+        let displayHeight: CGFloat = self.view.frame.height - 160
+        myTableView = UITableView(frame: CGRect(x: 0, y: 160, width: displayWidth, height: displayHeight))
+        myTableView.contentSize = CGSizeMake(displayWidth, displayHeight * 10)
         let nib = UINib(nibName: "CustomUITableViewCell", bundle: nil)
         myTableView.registerNib(nib, forCellReuseIdentifier: "CustomUITableViewCell")
         // DataSourceの設定をする.
         myTableView.dataSource = self
         // Delegateを設定する.
         myTableView.delegate = self
-        // Viewに追加する.
         self.view.addSubview(myTableView)
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
         self.imageHeaderView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: 160)
         self.view.layoutIfNeeded()
     }
@@ -55,6 +51,10 @@ class leftViewController: UIViewController, UITableViewDelegate, UITableViewData
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         print("Num: \(indexPath.row)")
         print("Value: \(myItems[indexPath.row])")
+        let appDelegate:AppDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let sliderMenuHandler = SliderMenuHandler(type: SliderMenuTableIndexType(rawValue: indexPath.row)!)
+        let viewController = sliderMenuHandler.getViewController()
+        appDelegate.myNavigationController!.pushViewController(viewController, animated: true)
     }
     
     /*
