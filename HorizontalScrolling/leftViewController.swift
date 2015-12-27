@@ -11,7 +11,6 @@ import UIKit
 class leftViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     private let myItems: NSArray = ["ホーム", "いいね！一覧", "出品した商品", "購入した商品", "設定", "ガイド", "お問い合わせ"]
     var myTableView: UITableView!
-    //SlideMenuではみ出している部分をなくす。
     var imageHeaderView: ImageHeaderView!
     
     
